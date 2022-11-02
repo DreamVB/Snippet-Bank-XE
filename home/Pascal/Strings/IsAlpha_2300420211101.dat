@@ -1,0 +1,5 @@
+function IsAlpha(C: char): boolean;
+begin
+  Result := Upcase(C) in ['A'..'Z'];
+end
+

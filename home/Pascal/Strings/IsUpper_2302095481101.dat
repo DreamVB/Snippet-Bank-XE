@@ -1,0 +1,5 @@
+function IsUpper(C: char): boolean;
+begin
+  Result := C in ['A'..'Z'];
+end;
+

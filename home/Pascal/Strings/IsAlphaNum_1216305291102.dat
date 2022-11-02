@@ -1,0 +1,5 @@
+function IsAlphaNum(C: char): boolean;
+begin
+  Result := C in ['A'..'Z', 'a'..'z', '0'..'9'];
+end;
+

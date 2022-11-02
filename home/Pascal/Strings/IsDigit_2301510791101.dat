@@ -1,0 +1,5 @@
+function IsDigit(C: char): boolean;
+begin
+  Result := C in ['0'..'9'];
+end;
+

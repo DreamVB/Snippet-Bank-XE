@@ -1,0 +1,13 @@
+function FixPath(S: string): string;
+begin
+  if RightStr(S, 1) <> PathDelim then
+  begin
+    Result := S + PathDelim;
+  end
+  else
+  begin
+    Result := S;
+  end;
+end;
+
+

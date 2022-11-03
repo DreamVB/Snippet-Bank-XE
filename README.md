@@ -3,4 +3,12 @@ A free opensource snippet manager made in lazarus
 
 ## Screen shot
 
-<img width="655" alt="logo" src="https://user-images.githubusercontent.com/17520035/199603860-d0208942-ad01-4beb-9af0-760b43794de6.png">
+<img width="741" alt="logo" src="https://user-images.githubusercontent.com/17520035/199853660-59a14946-f347-43a4-a185-143798bbb40e.png">
+
+## Updates Version 1.0.2
+
+- Updated GUI
+- Fixed a few bugs
+- You can now add info to your code such as name, date, likes and also set the highlighter
+- Added export code to HTML in export dialog
+- Added option to set editor font

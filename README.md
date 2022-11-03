@@ -3,7 +3,8 @@ A free opensource snippet manager made in lazarus
 
 ## Screen shot
 
-<img width="741" alt="logo" src="https://user-images.githubusercontent.com/17520035/199853660-59a14946-f347-43a4-a185-143798bbb40e.png">
+<img width="738" alt="logo" src="https://user-images.githubusercontent.com/17520035/199854542-48e75025-56a9-4b0c-b834-41772e6dad2d.png">
+
 
 ## Updates Version 1.0.2
 

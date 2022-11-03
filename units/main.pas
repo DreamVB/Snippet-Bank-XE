@@ -6,31 +6,39 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, Buttons, Menus, SynEdit, SynHighlighterPas, SynHighlighterHTML,
-  SynHighlighterCpp, SynHighlighterJava, SynHighlighterVB, SynHighlighterCss,
-  SynHighlighterJScript, SynHighlighterPHP, SynHighlighterPython, Tools,about;
+  ComCtrls, Buttons, Menus, EditBtn, Spin, SynEdit, SynHighlighterPas,
+  SynHighlighterHTML, SynHighlighterCpp, SynHighlighterJava, SynHighlighterVB,
+  SynHighlighterCss, SynHighlighterJScript, SynHighlighterPHP,
+  SynHighlighterPython, SynHighlighterBat, SynHighlighterSQL, SynExportHTML,
+  Tools, about, newlan;
 
 type
 
   { Tfrmmain }
 
   Tfrmmain = class(TForm)
+    cmdEdit: TSpeedButton;
     cmdAddCat: TButton;
     cmdAddCode: TButton;
     cmdAddLan1: TButton;
+    cmdFont: TSpeedButton;
+    cmdPaste: TSpeedButton;
+    cmdCut: TSpeedButton;
+    cmdCopy: TSpeedButton;
     cmdDelLan: TButton;
     cmdDelCat: TButton;
     cmdDelCode: TButton;
-    cmdCut: TButton;
-    cmdCopy: TButton;
-    cmdPaste: TButton;
-    cmdCancel: TButton;
-    cmdUndo: TButton;
-    cmdSaveCode: TButton;
-    cmdExport: TButton;
+    cmdAbout: TSpeedButton;
+    cmdCancel: TSpeedButton;
+    cmdUndo: TSpeedButton;
+    cmdExport: TSpeedButton;
     cboLan: TComboBox;
-    cmdAbout: TButton;
-    Label1: TLabel;
+    txtDate: TDateEdit;
+    txtAurthor: TEdit;
+    lblAurthor: TLabel;
+    lblDate: TLabel;
+    lblLikes: TLabel;
+    lblSyntext: TLabel;
     lstLan: TListBox;
     LstCats: TListBox;
     lstCodes: TListBox;
@@ -39,6 +47,7 @@ type
     mnuCopy: TMenuItem;
     mnuPaste: TMenuItem;
     mnuSelectAll: TMenuItem;
+    pToolbar: TPanel;
     Separator2: TMenuItem;
     Separator1: TMenuItem;
     pCodeArea: TPanel;
@@ -46,9 +55,13 @@ type
     pCat: TPanel;
     pCodes: TPanel;
     mnuEditMenu: TPopupMenu;
+    cmdSaveCode: TSpeedButton;
+    SpnLikes: TSpinEdit;
     StatusBar1: TStatusBar;
+    SynBat: TSynBatSyn;
     SynCPlus: TSynCppSyn;
     SynCSS: TSynCssSyn;
+    HtmlExport: TSynExporterHTML;
     SynSource: TSynEdit;
     SynHtml: TSynHTMLSyn;
     SynJava: TSynJavaSyn;
@@ -57,7 +70,11 @@ type
     SynPHP: TSynPHPSyn;
     SynPython: TSynPythonSyn;
     SynBas: TSynVBSyn;
+    SynSQL: TSynSQLSyn;
+    procedure Button1Click(Sender: TObject);
+    procedure cboLanChange(Sender: TObject);
     procedure cboLanSelect(Sender: TObject);
+    procedure cmdEditClick(Sender: TObject);
     procedure cmdAboutClick(Sender: TObject);
     procedure cmdAddCatClick(Sender: TObject);
     procedure cmdAddCodeClick(Sender: TObject);
@@ -69,6 +86,7 @@ type
     procedure cmdDelCodeClick(Sender: TObject);
     procedure cmdDelLanClick(Sender: TObject);
     procedure cmdExportClick(Sender: TObject);
+    procedure cmdFontClick(Sender: TObject);
     procedure cmdPasteClick(Sender: TObject);
     procedure cmdSaveCodeClick(Sender: TObject);
     procedure cmdUndoClick(Sender: TObject);
@@ -84,14 +102,19 @@ type
     procedure mnuPasteClick(Sender: TObject);
     procedure mnuSelectAllClick(Sender: TObject);
     procedure mnuUndoClick(Sender: TObject);
+    procedure pCodeAreaClick(Sender: TObject);
     procedure SetButtonEnable(A, B, C: boolean);
     procedure DeleteCatDir(lzPath: string);
     procedure DeleteLanDir(lzPath: string);
     procedure DeleteSourceFiles(lzPath: string);
     procedure SynSourceChange(Sender: TObject);
     procedure SynSourceChangeUpdating(ASender: TObject; AnUpdating: boolean);
-    procedure EnableEditArea(Enable: boolean);
+    procedure EnableEditButtons(Enable: boolean);
     procedure EnableItems(en: boolean);
+    function GetItemIndex(LBox: TListBox; sFind: string): integer;
+    procedure LoadCodeExample(Filename: string);
+    procedure SaveCodeExample(Filename: string);
+    procedure txtAurthorKeyPress(Sender: TObject; var Key: char);
   private
   public
 
@@ -108,6 +131,94 @@ implementation
 
 { Tfrmmain }
 
+procedure Tfrmmain.LoadCodeExample(Filename: string);
+var
+  sl: TStringList;
+  info: TStringList;
+  sInfo: string;
+begin
+  sl := TStringList.Create;
+  info := TStringList.Create;
+  sInfo := '';
+
+  //Defaults info
+  cboLan.ItemIndex := 0;
+  txtAurthor.Text := 'NoName';
+  txtDate.Text := FormatDateTime('DD/MM/YYYY',Now);
+  SpnLikes.Value := 0;
+
+  if FileExists(Filename) then
+  begin
+    sl.LoadFromFile(Filename);
+    if sl.Count > 0 then
+    begin
+
+      sInfo := sl[0];
+      //Delete the line from the code
+      if leftstr(sInfo, 5) = '#Info' then
+      begin
+        sl.Delete(0);
+        Delete(sInfo, 1, 5);
+        //Display the info for the code example.
+        info.Delimiter := ',';
+        info.DelimitedText := sInfo;
+        cboLan.ItemIndex := StrToInt(info[0]);
+        txtAurthor.Text := StringReplace(info[1],'+',' ',[rfReplaceAll]);
+        txtDate.Text := info[2];
+        SpnLikes.Value := StrToInt(info[3]);
+      end;
+
+      SynSource.Lines := sl;
+      SynSource.Modified := False;
+      SynSourceChangeUpdating(nil, False);
+    end;
+    cmdDelCode.Enabled := True;
+    //EnableEditButtons(True);
+    sl.Clear;
+    info.Clear;
+  end;
+end;
+
+procedure Tfrmmain.SaveCodeExample(Filename: string);
+var
+  sl: TStringList;
+  info: string;
+begin
+  sl := TStringList.Create;
+  //Code header info
+  info := '#Info ' + IntToStr(cboLan.ItemIndex) + ',' +
+  StringReplace(txtAurthor.Text,' ','+',[rfReplaceAll]) +
+    ',' + txtDate.Text + ',' + IntToStr(SpnLikes.Value);
+  //The code data
+  sl.Add(info);
+  sl.Add(TrimRight(SynSource.Text));
+  sl.SaveToFile(Filename);
+  sl.Clear;
+end;
+
+procedure Tfrmmain.txtAurthorKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key in ['+',','] then Key := #0;
+end;
+
+function Tfrmmain.GetItemIndex(LBox: TListBox; sFind: string): integer;
+var
+  X: integer;
+  idx: integer;
+begin
+  idx := -1;
+
+  for X := 0 to LBox.Count - 1 do
+  begin
+    if lowercase(LBox.Items[X]) = lowercase(sFind) then
+    begin
+      idx := X;
+      Break;
+    end;
+  end;
+  Result := idx;
+end;
+
 procedure Tfrmmain.EnableItems(en: boolean);
 begin
   LstLan.Enabled := en;
@@ -121,14 +232,20 @@ begin
   cmdDelCode.Enabled := en;
 end;
 
-procedure Tfrmmain.EnableEditArea(Enable: boolean);
+procedure Tfrmmain.EnableEditButtons(Enable: boolean);
 begin
 
   cmdCut.Enabled := Enable;
   cmdcopy.Enabled := Enable;
   cmdpaste.Enabled := Enable;
   cmdUndo.Enabled := Enable;
-  SynSource.Enabled := Enable;
+  cmdCancel.Enabled := Enable;
+  cmdsavecode.Enabled := Enable;
+  SynSource.ReadOnly := not Enable;
+  cbolan.Enabled := Enable;
+  SpnLikes.ReadOnly := not Enable;
+  txtDate.ReadOnly := not Enable;
+  txtAurthor.ReadOnly := not Enable;
 
 end;
 
@@ -214,26 +331,16 @@ end;
 procedure Tfrmmain.SynSourceChange(Sender: TObject);
 begin
 
-  if m_SelectedFile <> '' then
-  begin
-
-    cmdUndo.Enabled := SynSource.CanUndo;
-    EnableItems(False);
-
-    cmdCancel.Enabled := True;
-    cmdSaveCode.Enabled := True;
-    cmdExport.Enabled := True;
-  end;
 end;
 
 procedure Tfrmmain.SynSourceChangeUpdating(ASender: TObject; AnUpdating: boolean);
 begin
-  if m_SelectedFile <> '' then
+  if (m_SelectedFile <> '') and (cmdSaveCode.Enabled) then
   begin
-       cmdCut.Enabled := (SynSource.SelText <> '');
-       cmdcopy.Enabled := cmdcut.Enabled;
-       cmdpaste.Enabled := synsource.CanPaste;
-       cmdUndo.Enabled := SynSource.CanUndo;
+    cmdCut.Enabled := (SynSource.SelText <> '');
+    cmdcopy.Enabled := cmdcut.Enabled;
+    cmdpaste.Enabled := synsource.CanPaste;
+    cmdUndo.Enabled := SynSource.CanUndo;
   end;
 end;
 
@@ -326,6 +433,7 @@ procedure Tfrmmain.LstCatsClick(Sender: TObject);
 begin
   lstCodes.Items.Clear;
   m_CodeFileList.Clear;
+  m_SelectedFile := '';
 
   if LstCats.ItemIndex > -1 then
   begin
@@ -334,10 +442,12 @@ begin
     //Load the source codes for the category
     LoadCodesInList(LanCatPath, lstCodes);
     //Enable command buttons
+    cmdedit.Enabled := False;
+    cmdExport.Enabled := False;
     cmdDelCat.Enabled := True;
     cmdAddCode.Enabled := True;
     SynSource.Lines.Clear;
-    EnableEditArea(False);
+    EnableEditButtons(False);
   end;
 end;
 
@@ -346,17 +456,16 @@ begin
 
   if lstCodes.ItemIndex > -1 then
   begin
+    cmdedit.Enabled := True;
+    cmdExport.Enabled := True;
     //Get selected code filename
     m_SelectedFile := m_CodeFileList[lstCodes.ItemIndex];
     //Make sure the file is here
     if FileExists(m_SelectedFile) then
     begin
       //Load the code file into the code editor
-      SynSource.Lines.LoadFromFile(m_SelectedFile);
-      SynSource.Modified := False;
-      cmdDelCode.Enabled := True;
-      EnableEditArea(True);
-      SynSourceChangeUpdating(Sender, False);
+      //SynSource.Lines.LoadFromFile(m_SelectedFile);
+      LoadCodeExample(m_SelectedFile);
     end;
   end;
 end;
@@ -366,6 +475,7 @@ begin
 
   lstCodes.Items.Clear;
   m_CodeFileList.Clear;
+  m_SelectedFile := '';
 
   if lstLan.ItemIndex > -1 then
   begin
@@ -373,9 +483,11 @@ begin
     //Load items into listbox.
     LoadItemsInList(LanPath, LstCats);
     //Enable command buttons
+    cmdedit.Enabled := False;
+    cmdExport.Enabled := False;
     cmdAddCat.Enabled := True;
     cmdDelLan.Enabled := True;
-    EnableEditArea(False);
+    EnableEditButtons(False);
     SynSource.Lines.Clear;
   end;
 end;
@@ -411,6 +523,11 @@ end;
 procedure Tfrmmain.mnuUndoClick(Sender: TObject);
 begin
   cmdUndoClick(Sender);
+end;
+
+procedure Tfrmmain.pCodeAreaClick(Sender: TObject);
+begin
+
 end;
 
 procedure Tfrmmain.ErrorMsg(code: integer);
@@ -472,6 +589,7 @@ procedure Tfrmmain.FormCreate(Sender: TObject);
 begin
   m_CodeFileList := TStringList.Create;
   Tools.HomePath := FixPath(ExtractFilePath(Application.ExeName)) + 'home' + PathDelim;
+  txtDate.Text := FormatDateTime('DD/MM/YYYY',Now);
 
   //Check if home folder is found
   if not DirectoryExists(Tools.HomePath) then
@@ -481,21 +599,20 @@ begin
   end;
   //Get a list of folders in the home path
   LoadItemsInList(HomePath, lstLan);
-  EnableEditArea(False);
+  EnableEditButtons(False);
 end;
 
 procedure Tfrmmain.cmdAddLanClick(Sender: TObject);
 var
-  S: string;
-  isOk: boolean;
+  frm: TfrmNewLan;
   RetVal: integer;
 begin
-  S := '';
-  isOk := InputQuery(Text, 'Enter a new name for the language:', S);
-
-  if isOk and (Length(S) > 0) then
+  Tools.ButtonPress := 0;
+  frm := TfrmNewLan.Create(self);
+  frm.ShowModal;
+  if Tools.ButtonPress = 1 then
   begin
-    RetVal := NewLanFolder(S);
+    RetVal := NewLanFolder(tools.SelectedLanguage);
 
     if RetVal <> 1 then
     begin
@@ -503,17 +620,19 @@ begin
     end
     else
     begin
-      lstLan.Items.Add(S);
-      lstLan.ItemIndex := 0;
+      lstLan.Items.Add(tools.SelectedLanguage);
+      lstLan.ItemIndex := GetItemIndex(lstLan, Tools.SelectedLanguage);
       lstLanClick(Sender);
     end;
+
   end;
+  frm.Destroy;
 end;
 
 procedure Tfrmmain.cmdCancelClick(Sender: TObject);
 begin
   EnableItems(True);
-  cmdSaveCode.Enabled := False;
+  EnableEditButtons(False);
 end;
 
 procedure Tfrmmain.cmdCopyClick(Sender: TObject);
@@ -556,11 +675,16 @@ begin
       DeleteFile(m_SelectedFile);
       lstCodes.Refresh;
       cmdDelCode.Enabled := False;
-
+      m_SelectedFile := '';
       if lstCodes.Items.Count > 0 then
       begin
         lstCodes.ItemIndex := 0;
         lstCodesClick(Sender);
+      end
+      else
+      begin
+        EnableEditButtons(False);
+        SynSource.Lines.Clear;
       end;
     end;
   end;
@@ -585,15 +709,43 @@ procedure Tfrmmain.cmdExportClick(Sender: TObject);
 var
   sd: TSaveDialog;
 begin
+
+  if lstCodes.ItemIndex > -1 then
+  begin
   sd := TSaveDialog.Create(self);
   sd.Title := 'Export';
-  sd.Filter := 'Text Files(*.txt)|*.txt|All Files(*.*)|*.*';
+  sd.Filter := 'Text Files(*.txt)|*.txt|HTML Files(*.html)|*.html|All Files(*.*)|*.*';
   sd.DefaultExt := 'txt';
   if sd.Execute then
   begin
-    SynSource.Lines.SaveToFile(sd.FileName);
+    //Export as text
+    if sd.FilterIndex <> 2 then
+    begin
+      SynSource.Lines.SaveToFile(sd.FileName);
+    end
+    else
+    begin
+      //Export as html
+      HtmlExport.Highlighter := SynSource.Highlighter;
+      HtmlExport.ExportAll(SynSource.Lines);
+      HtmlExport.SaveToFile(sd.FileName);
+    end;
   end;
   sd.Destroy;
+  end;
+end;
+
+procedure Tfrmmain.cmdFontClick(Sender: TObject);
+var
+  fd: TFontDialog;
+begin
+  fd := TFontDialog.Create(self);
+  fd.Font := SynSource.Font;
+  if fd.Execute then
+  begin
+    SynSource.Font := fd.Font;
+  end;
+  fd.Destroy;
 end;
 
 procedure Tfrmmain.cmdPasteClick(Sender: TObject);
@@ -603,15 +755,11 @@ end;
 
 procedure Tfrmmain.cmdSaveCodeClick(Sender: TObject);
 begin
-  if (lstCodes.ItemIndex > -1) and (FileExists(m_SelectedFile)) then
-  begin
-    SynSource.Lines.SaveToFile(m_SelectedFile);
-    SynSource.Modified := False;
-    cmdCancel.Enabled := False;
-    cmdUndo.Enabled := SynSource.CanUndo;
-    cmdSaveCode.Enabled := False;
-    EnableItems(True);
-  end;
+  SaveCodeExample(m_SelectedFile);
+  SynSource.Modified := False;
+  cmdUndo.Enabled := SynSource.CanUndo;
+  EnableItems(True);
+  EnableEditButtons(False);
 end;
 
 procedure Tfrmmain.cmdUndoClick(Sender: TObject);
@@ -640,7 +788,7 @@ begin
     else
     begin
       LstCats.Items.Add(S);
-      LstCats.ItemIndex := (LstCats.Count - 1);
+      LstCats.ItemIndex := GetItemIndex(LstCats, S);
       LstCatsClick(Sender);
     end;
   end;
@@ -670,7 +818,7 @@ begin
         //Select the cats
         LstCatsClick(Sender);
         //Select first code in list
-        lstCodes.ItemIndex := 0;
+        lstCodes.ItemIndex := GetItemIndex(lstCodes, S);
         lstCodesClick(Sender);
       end;
     end;
@@ -687,54 +835,82 @@ begin
     end;
     1:
     begin
+      SynSource.Highlighter := SynBat;
+    end;
+    2:
+    begin
       //c/c++
       SynSource.Highlighter := SynCPlus;
     end;
-    2:
+    3:
     begin
       //CSS
       SynSource.Highlighter := SynCSS;
     end;
-    3:
+    4:
     begin
       //Html
       SynSource.Highlighter := SynHtml;
     end;
-    4:
+    5:
     begin
       //Java
       SynSource.Highlighter := SynJava;
     end;
-    5:
+    6:
     begin
       //JS
       SynSource.Highlighter := SynJS;
     end;
-    6:
+    7:
     begin
       //Pascal
       SynSource.Highlighter := SynPas;
     end;
-    7:
+    8:
     begin
       //Php
       SynSource.Highlighter := SynPHP;
     end;
-    8:
+    9:
     begin
       //Python
       SynSource.Highlighter := SynPython;
     end;
+    10:
+    begin
+      //SQL
+      SynSource.Highlighter := SynSQL;
+    end;
   end;
+end;
+
+procedure Tfrmmain.cmdEditClick(Sender: TObject);
+begin
+  if (FileExists(m_SelectedFile)) and (lstCodes.ItemIndex > -1) then;
+  begin
+    EnableItems(False);
+    EnableEditButtons(True);
+  end;
+end;
+
+procedure Tfrmmain.cboLanChange(Sender: TObject);
+begin
+
+end;
+
+procedure Tfrmmain.Button1Click(Sender: TObject);
+begin
+
 end;
 
 procedure Tfrmmain.cmdAboutClick(Sender: TObject);
 var
-  frm : TfrmAbout;
+  frm: TfrmAbout;
 begin
-   frm := TfrmAbout.Create(self);
-   frm.ShowModal;
-   frm.Destroy;
+  frm := TfrmAbout.Create(self);
+  frm.ShowModal;
+  frm.Destroy;
 end;
 
 end.

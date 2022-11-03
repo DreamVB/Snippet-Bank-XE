@@ -11,7 +11,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms,
   main,
-  Tools, about { you can add units after this };
+  Tools, about, newlan { you can add units after this };
 
 {$R *.res}
 
@@ -21,5 +21,6 @@ begin
   Application.Initialize;
   Application.CreateForm(Tfrmmain, frmmain);
   Application.CreateForm(TfrmAbout, frmAbout);
+  Application.CreateForm(TfrmNewLan, frmNewLan);
   Application.Run;
 end.

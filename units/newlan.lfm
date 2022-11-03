@@ -1,0 +1,125 @@
+object frmNewLan: TfrmNewLan
+  Left = 724
+  Height = 287
+  Top = 383
+  Width = 525
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'New Language'
+  ClientHeight = 287
+  ClientWidth = 525
+  DesignTimePPI = 144
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '2.2.4.0'
+  object cboLan: TComboBox
+    Left = 32
+    Height = 33
+    Top = 92
+    Width = 462
+    ItemHeight = 25
+    Items.Strings = (
+      'Ada'
+      'ALGOL'
+      'APL'
+      'ASM'
+      'ASP'
+      'AutoIt'
+      'Awk'
+      'Bash'
+      'Basic'
+      'Batch'
+      'Bootstrap'
+      'C'
+      'C#'
+      'C++'
+      'CSS'
+      'Delphi'
+      'Forth'
+      'Go'
+      'HTML'
+      'INI'
+      'Java'
+      'JQuery'
+      'JS'
+      'L'
+      'Lisp'
+      'Lisp'
+      'Logo'
+      'ML'
+      'MySQL'
+      'NodeJS'
+      'Pascal'
+      'Perl'
+      'PHP'
+      'Python'
+      'VBS'
+      'Visual Basic'
+      'XLS'
+      'XML'
+    )
+    Sorted = True
+    Style = csDropDownList
+    TabOrder = 0
+  end
+  object txtLan: TEdit
+    Left = 32
+    Height = 33
+    Top = 180
+    Width = 464
+    Enabled = False
+    TabOrder = 1
+  end
+  object lblTitle: TLabel
+    Left = 32
+    Height = 25
+    Top = 8
+    Width = 410
+    Caption = 'Select a language from the list or enter your own'
+    Font.CharSet = ANSI_CHARSET
+    Font.Name = 'Segoe UI Semibold'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object cmdOk: TButton
+    Left = 253
+    Height = 38
+    Top = 232
+    Width = 113
+    Caption = 'OK'
+    OnClick = cmdOkClick
+    TabOrder = 2
+  end
+  object cmdClose: TButton
+    Left = 381
+    Height = 38
+    Top = 232
+    Width = 113
+    Caption = 'Close'
+    OnClick = cmdCloseClick
+    TabOrder = 3
+  end
+  object R1: TRadioButton
+    Left = 32
+    Height = 29
+    Top = 56
+    Width = 182
+    Caption = 'Choose a language'
+    Checked = True
+    OnChange = R1Change
+    TabOrder = 5
+    TabStop = True
+  end
+  object R2: TRadioButton
+    Left = 32
+    Height = 29
+    Top = 144
+    Width = 75
+    Caption = 'Other'
+    OnChange = R2Change
+    TabOrder = 4
+  end
+end

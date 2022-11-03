@@ -1,5 +1,5 @@
+#Info 7,John,20/09/2022,10
 function IsUpper(C: char): boolean;
 begin
   Result := C in ['A'..'Z'];
 end;
-

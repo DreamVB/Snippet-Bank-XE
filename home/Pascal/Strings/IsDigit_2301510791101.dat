@@ -1,5 +1,5 @@
+#Info 7,DreamVB,03/11/2022,50
 function IsDigit(C: char): boolean;
 begin
   Result := C in ['0'..'9'];
 end;
-

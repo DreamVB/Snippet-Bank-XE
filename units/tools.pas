@@ -5,13 +5,15 @@ unit Tools;
 interface
 
 uses
-  Classes, SysUtils, Dialogs;
+  Classes, SysUtils;
 
 var
   HomePath: string;
   LanPath: string;
   LanCatPath: string;
 
+  SelectedLanguage: string;
+  ButtonPress: integer;
 
 function GetUId: string;
 function IsAlphaNum(S: string): boolean;
@@ -27,7 +29,7 @@ begin
   Result := FormatDateTime('hhnnsszzzMMDD', Now);
 end;
 
-function VaildCodeName(S: string): boolean;
+function IsGoodName(S: string): boolean;
 var
   X: integer;
   flag: boolean;
@@ -36,7 +38,7 @@ begin
 
   for X := 1 to Length(S) do
   begin
-    if not (S[X] in ['A'..'Z', 'a'..'z', '0'..'9', '-', ' ']) then
+    if not (S[X] in ['A'..'Z', 'a'..'z', '0'..'9', '-', '+', ' ']) then
     begin
       flag := False;
       Break;
@@ -86,7 +88,7 @@ begin
   begin
     rCode := 0;
   end
-  else if not IsAlphaNum(sName) then
+  else if not IsGoodName(sName) then
   begin
     rCode := 2;
   end
@@ -141,7 +143,7 @@ begin
   begin
     rCode := 7;
   end
-  else if not VaildCodeName(sName) then
+  else if not IsGoodName(sName) then
   begin
     rCode := 8;
   end

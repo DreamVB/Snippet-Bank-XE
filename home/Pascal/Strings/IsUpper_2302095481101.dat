@@ -1,4 +1,4 @@
-#Info 7,John,20/09/2022,10
+#Info 8,John,20/09/2022,10,"Tests a char for uppercase"
 function IsUpper(C: char): boolean;
 begin
   Result := C in ['A'..'Z'];

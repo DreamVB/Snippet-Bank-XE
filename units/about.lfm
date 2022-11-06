@@ -2,12 +2,12 @@ object frmAbout: TfrmAbout
   Left = 961
   Height = 232
   Top = 248
-  Width = 472
+  Width = 672
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'About'
   ClientHeight = 232
-  ClientWidth = 472
+  ClientWidth = 672
   DesignTimePPI = 144
   Position = poMainFormCenter
   LCLVersion = '2.2.4.0'
@@ -150,7 +150,7 @@ object frmAbout: TfrmAbout
     Height = 25
     Top = 80
     Width = 101
-    Caption = 'Version 1.0.1'
+    Caption = 'Version 1.1.2'
     Font.CharSet = ANSI_CHARSET
     Font.Color = clBlue
     Font.Pitch = fpVariable
@@ -159,9 +159,9 @@ object frmAbout: TfrmAbout
     ParentFont = False
   end
   object lblInfo: TLabel
-    Left = 80
+    Left = 280
     Height = 28
-    Top = 120
+    Top = 72
     Width = 312
     Caption = 'Free opensource snippet manager'
     Font.CharSet = ANSI_CHARSET
@@ -174,9 +174,9 @@ object frmAbout: TfrmAbout
     ParentFont = False
   end
   object cmdOK: TButton
-    Left = 360
+    Left = 568
     Height = 38
-    Top = 176
+    Top = 168
     Width = 65
     Caption = 'OK'
     OnClick = cmdOKClick
@@ -197,5 +197,13 @@ object frmAbout: TfrmAbout
     Font.Style = [fsBold, fsItalic]
     ParentColor = False
     ParentFont = False
+  end
+  object Label1: TLabel
+    Left = 64
+    Height = 25
+    Top = 120
+    Width = 528
+    Caption = 'This project uses icons from lazarus-main-images-general_purpose'
+    ParentColor = False
   end
 end

@@ -1,0 +1,7 @@
+#Info 5,Ben,05/11/2022,5,"Example"
+[main]
+value = 1
+name = "DreamVB"
+
+[colors]
+Color1 = Red

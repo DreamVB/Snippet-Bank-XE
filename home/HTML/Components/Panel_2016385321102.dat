@@ -1,3 +1,4 @@
+#Info 4,Ben,03/11/2022,2,"Example Panel Red"
 <div class="w3-panel w3-red">
   <p>I am a panel.</p>
 </div>

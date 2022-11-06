@@ -1,3 +1,4 @@
+#Info 8,Dan,13/07/2022,8,"Append a backlash to a given path"
 function FixPath(S: string): string;
 begin
   if RightStr(S, 1) <> PathDelim then

@@ -1,5 +1,5 @@
-#Info 7,Bill+Gates,19/10/2022,1
+#Info 8,Bill+Gates,19/10/2022,1,"Returns true if C is a letter"
 function IsAlpha(C: char): boolean;
 begin
   Result := Upcase(C) in ['A'..'Z'];
-end
+end;

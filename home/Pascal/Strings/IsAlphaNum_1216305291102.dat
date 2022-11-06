@@ -1,4 +1,4 @@
-#Info 7,Dan,13/07/2022,8
+#Info 8,Dan,13/07/2022,8,"Check for alpha and numbers"
 function IsAlphaNum(C: char): boolean;
 begin
   Result := C in ['A'..'Z', 'a'..'z', '0'..'9'];

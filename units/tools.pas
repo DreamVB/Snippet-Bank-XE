@@ -5,7 +5,7 @@ unit Tools;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, Dialogs;
 
 var
   HomePath: string;
@@ -19,8 +19,11 @@ function GetUId: string;
 function IsAlphaNum(S: string): boolean;
 function FixPath(S: string): string;
 function NewLanFolder(sName: string): integer;
+function RenameLanFolder(sOld, sNew: string): integer;
 function NewLanCatFolder(sLanPath, sName: string): integer;
+function RenameLanCatFolder(sLanPath, sOldCat, sNewCat: string): integer;
 function NewCodeFile(sLanPath, sName: string): integer;
+function RenameCodeFile(sName, sOldName, sNewName: string): integer;
 
 implementation
 
@@ -76,6 +79,32 @@ begin
   end;
 end;
 
+function RenameLanFolder(sOld, sNew: string): integer;
+var
+  rCode: integer;
+  sOldDir: string;
+  sNewDir: string;
+begin
+  rCode := 1;
+
+  sOldDir := HomePath + sOld;
+  sNewDir := HomePath + sNew;
+
+  if Length(sNew) = 0 then
+  begin
+    rCode := 0;
+  end
+  else if not IsGoodName(sNew) then
+  begin
+    rCode := 2;
+  end
+  else
+  begin
+    RenameFile(sOldDir, sNewDir);
+  end;
+  Result := rCode;
+end;
+
 function NewLanFolder(sName: string): integer;
 var
   rCode: integer;
@@ -99,6 +128,31 @@ begin
   else
   begin
     CreateDir(HomePath + sName);
+  end;
+  Result := rCode;
+end;
+
+function RenameLanCatFolder(sLanPath, sOldCat, sNewCat: string): integer;
+var
+  rCode: integer;
+  sOldDir: string;
+  sNewDir: string;
+begin
+  rCode := 1;
+  sOldDir := sLanPath + sOldCat;
+  sNewDir := sLanPath + sNewCat;
+
+  if Length(sNewCat) = 0 then
+  begin
+    rCode := 4;
+  end
+  else if not IsAlphaNum(sNewCat) then
+  begin
+    rCode := 5;
+  end
+  else
+  begin
+    RenameFile(sOldDir, sNewDir);
   end;
   Result := rCode;
 end;
@@ -156,6 +210,29 @@ begin
     AssignFile(tf, lzFile);
     Rewrite(tf);
     CloseFile(tf);
+  end;
+
+  Result := rCode;
+end;
+
+function RenameCodeFile(sName, sOldName, sNewName: string): integer;
+var
+  rCode: integer;
+  tf: TextFile;
+begin
+  rCode := 1;
+
+  if Length(sName) = 0 then
+  begin
+    rCode := 7;
+  end
+  else if not IsGoodName(sName) then
+  begin
+    rCode := 8;
+  end
+  else
+  begin
+    RenameFile(sOldName, sNewName);
   end;
 
   Result := rCode;
